@@ -33,7 +33,7 @@ class TiketHttpInstance
         if (self::$instance !== null) {
             return self::$instance;
         }
-        self::$instance = new TicketHttp(
+        self::$instance = new TiketHttp(
             self::$settings['client_secret'],
             self::$settings['business_id'],
             self::$settings['business_name'],

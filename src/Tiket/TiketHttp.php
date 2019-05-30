@@ -53,11 +53,11 @@ class TiketHttp
     private static $timeOut = 60;
 
     /**
-     * Timeout curl.
+     * Auth Token.
      *
      * @var int
      */
-    private static $authToken = '';
+    private static $authToken;
 
     /**
      * Default Curl Options.
@@ -174,220 +174,6 @@ class TiketHttp
     }
 
     /**
-     * Generate authentifikasi ke server berupa OAUTH.
-     *
-     * @return \Unirest\Response
-     */
-    public function httpAuth()
-    {
-        $client_secret = $this->settings['client_secret'];
-
-        $headers = array('Accept' => 'application/json', 'Content-Type' => 'application/json', 'user-agent' => $this->settings['headers-agent']);
-
-        $request_path = "apiv1/payexpress";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-        $data = array();
-        $data['method'] = 'getToken';
-        $data['secretkey'] = $client_secret;
-        $data['output'] = 'json';
-
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-        $token = self::setAuthToken($response->body);
-        return $response->body;
-    }
-
-    /**
-     * Ambil informasi currency.
-     *
-     * @return \Unirest\Response
-     */
-    public function getListCurrency()
-    {
-        $request_path = "general_api/listCurrency";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-        $token = self::getAuthToken();
-        $data = array();
-        $data['token'] = $token;
-        $data['output'] = 'json';
-        $headers = array(
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'user-agent' => $this->settings['headers-agent']
-        );
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
-     * Ambil informasi Bahasa.
-     *
-     * @param string $oauth_token nilai token yang telah didapatkan setelah login
-     *
-     * @return \Unirest\Response
-     */
-    public function getListLanguage()
-    {
-        $request_path = "general_api/listLanguage";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-        $token = self::getAuthToken();
-
-        $data = array();
-        $data['token'] = $token;
-        $data['output'] = 'json';
-
-        $headers = array('Accept' => 'application/json', 'Content-Type' => 'application/json', 'user-agent' => $this->settings['headers-agent']);
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
-     * Ambil informasi Bahasa.
-     *
-     * @param string $oauth_token nilai token yang telah didapatkan setelah login
-     *
-     * @return \Unirest\Response
-     */
-    public function getCheckOrder($orderId, $email)
-    {
-        $request_path = "general_api/listCountry";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-        $token = self::getAuthToken();
-
-        $data = array();
-        $data['order_id'] = $orderId;
-        $data['email'] = $email;
-        $data['token'] = $token;
-        $data['output'] = 'json';
-        $headers = array('Accept' => 'application/json', 'Content-Type' => 'application/json', 'user-agent' => $this->settings['headers-agent']);
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
-     * You use this parameter if you want to pay the current user using your deposit.
-     *
-     * @param string $oauth_token nilai token yang telah didapatkan setelah login
-     *
-     * @return \Unirest\Response
-     */
-    public function getSaldo($confirmkey, $username)
-    {
-        $request_path = "partner/transactionApi/get_saldo";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-
-        $data = array();
-        $client_secret = $this->settings['client_secret'];
-        $data['secretkey'] = $client_secret;
-        $data['confirmkey'] = $confirmkey;
-        $data['username'] = $username;
-        $data['output'] = 'json';
-        $headers = array('Accept' => 'application/json', 'Content-Type' => 'application/json', 'user-agent' => $this->settings['headers-agent']);
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
-     * You use this parameter if you want to pay the current user using your deposit.
-     *
-     * @param string $id todo
-     * @param string $btnBooking flag for continue
-     *
-     * @return \Unirest\Response
-     */
-    public function getCheckoutPayment($id = '8', $btnBooking = '1')
-    {
-        $request_path = "checkout/checkout_payment/$id";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-        $token = self::getAuthToken();
-
-        $data = array();
-        $data['btn_booking'] = $btnBooking;
-        $data['token'] = $token;
-        $data['output'] = 'json';
-        $headers = array(
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'user-agent' => $this->settings['headers-agent']
-        );
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
-     * To get List deposit transaction.
-     *
-     * @param string $confirmkey todo
-     * @param string $username todo
-     *
-     * @return \Unirest\Response
-     */
-    public function getShowTransactionApi($confirmkey, $username)
-    {
-        $request_path = "partner/transactionApi";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-
-        $data = array();
-        $client_secret = $this->settings['client_secret'];
-        $data['secretkey'] = $client_secret;
-        $data['confirmkey'] = $confirmkey;
-        $data['username'] = $username;
-        $data['output'] = 'json';
-        $headers = array(
-            'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
-            'user-agent' => $this->settings['headers-agent']
-        );
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
-     * Confirm Transaction by API.
-     *
-     * @param string $orderId todo
-     * @param string $confirmkey confirmkey given by Tiket.com
-     * @param string $username your username as the one who link to the business
-     * @param string $textarea_note note for the confirmation
-     * @param string $tanggal confirmation date YYYY-MM-DD
-     *
-     * @return \Unirest\Response
-     */
-    public function getConfirmPayment($orderId, $confirmkey, $username, $textarea_note, $tanggal)
-    {
-        $request_path = "partner/transactionApi/confirmPayment";
-        $domain = $this->ddnDomain();
-        $full_url = $domain . $request_path;
-
-        $data = array();
-        $client_secret = $this->settings['client_secret'];
-
-        $data['order_id'] = $orderId;
-        $data['secretkey'] = $client_secret;
-        $data['confirmkey'] = $confirmkey;
-        $data['username'] = $username;
-        $data['textarea_note'] = $textarea_note;
-        $data['tanggal'] = $tanggal;
-        $data['output'] = 'json';
-        $headers = array('Accept' => 'application/json', 'Content-Type' => 'application/json', 'user-agent' => $this->settings['headers-agent']);
-        $response = \Unirest\Request::get($full_url, $headers, $data);
-
-        return $response;
-    }
-
-    /**
      * Get TimeZone.
      *
      * @return string
@@ -451,7 +237,7 @@ class TiketHttp
     public static function setAuthToken($token)
     {
         self::$authToken = $token;
-        return self::$token;
+        return self::$authToken;
     }
 
     /**
@@ -542,6 +328,401 @@ class TiketHttp
     {
         $data = self::mergeCurlOptions(self::$curlOptions, $curlOpts);
         self::$curlOptions = $data;
+    }
+
+    /**
+     * Generate authentifikasi ke server berupa OAUTH.
+     *
+     * @return \Unirest\Response
+     */
+    public function httpAuth()
+    {
+        $request_path = "apiv1/payexpress";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $data = array();
+        $data['method'] = 'getToken';
+        $data['secretkey'] = $this->settings['client_secret'];
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+        return $response->body->token;
+    }
+
+    /**
+     * Ambil List currency.
+     *
+     * @return \Unirest\Response
+     */
+    public function getListCurrency()
+    {
+        $request_path = "general_api/listCurrency";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $token = self::getAuthToken();
+        $data = array();
+        $data['token'] = $token;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * Ambil List Bahasa.
+     *
+     * @param string $oauth_token nilai token yang telah didapatkan setelah login
+     *
+     * @return \Unirest\Response
+     */
+    public function getListLanguage()
+    {
+        $request_path = "general_api/listLanguage";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $token = self::getAuthToken();
+
+        $data = array();
+        $data['token'] = $token;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * Ambil List Negara.
+     *
+     * @param string $token nilai token yang telah didapatkan setelah login
+     * @param string $orderId Id order.
+     * @param string $email email
+     *
+     * @return \Unirest\Response
+     */
+    public function getListCountry($token, $orderId, $email)
+    {
+        $request_path = "general_api/listCountry";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+
+        $data = array();
+        $data['order_id'] = $orderId;
+        $data['email'] = $email;
+        $data['token'] = $token;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * You use this parameter if you want to pay the current user using your deposit.
+     *
+     * @param string $confirmKey kode konfirmasi
+     * @param string $username nama user
+     * @return \Unirest\Response
+     */
+    public function getSaldo($confirmKey, $username)
+    {
+        $request_path = "partner/transactionApi/get_saldo";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+
+        $data = array();
+        $client_secret = $this->settings['client_secret'];
+        $data['secretkey'] = $client_secret;
+        $data['confirmkey'] = $confirmKey;
+        $data['username'] = $username;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * You use this parameter if you want to pay the current user using your deposit.
+     *
+     * @param string $token token login.
+     * @param string $id todo
+     * @param string $btnBooking flag for continue
+     *
+     * @return \Unirest\Response
+     */
+    public function getCheckoutPayment($token, $id = '8', $btnBooking = '1')
+    {
+        $request_path = "checkout/checkout_payment/$id";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $data = array();
+        $data['btn_booking'] = $btnBooking;
+        $data['token'] = $token;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * To get List deposit transaction.
+     *
+     * @param string $confirmkey todo
+     * @param string $username todo
+     *
+     * @return \Unirest\Response
+     */
+    public function getShowTransactionApi($confirmkey, $username)
+    {
+        $request_path = "partner/transactionApi";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+
+        $data = array();
+        $client_secret = $this->settings['client_secret'];
+        $data['secretkey'] = $client_secret;
+        $data['confirmkey'] = $confirmkey;
+        $data['username'] = $username;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * Confirm Transaction by API.
+     *
+     * @param string $orderId Order id
+     * @param string $confirmkey confirmkey given by Tiket.com
+     * @param string $username your username as the one who link to the business
+     * @param string $textarea_note note for the confirmation
+     * @param string $tanggal confirmation date YYYY-MM-DD
+     *
+     * @return \Unirest\Response
+     */
+    public function getConfirmPayment($orderId, $confirmkey, $username, $textarea_note, $tanggal)
+    {
+        $request_path = "partner/transactionApi/confirmPayment";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+
+        $data = array();
+        $client_secret = $this->settings['client_secret'];
+
+        $data['order_id'] = $orderId;
+        $data['secretkey'] = $client_secret;
+        $data['confirmkey'] = $confirmkey;
+        $data['username'] = $username;
+        $data['textarea_note'] = $textarea_note;
+        $data['tanggal'] = $tanggal;
+        $data['output'] = 'json';
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * Flight Search.
+     *
+     * @param string $token for saving transaction that done by user
+     * @param string $departureCode Departure airport code
+     * @param string $arrivalCode Arrival airport code
+     * @param string $departDate YYYY-MM-DD, Depart date Result will be in
+     * @param string $returnDate YYYY-MM-DD, Return date If provided, then system will return
+     * @param int $adult number of adult passenger
+     * @param int $child number of child passenger
+     * @param int $infant number of infant passenger
+     * @param int $version version of the search
+     *
+     * @return \Unirest\Response
+     */
+    public function getFlightSearch($token, $departureCode, $arrivalCode, $departDate, $returnDate, $adult = 1, $child = 0, $infant = 0, $version = 3)
+    {
+        $request_path = "search/flight";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+
+        $data = array();
+        $data['token'] = $token;
+        $data['d'] = $departureCode;
+        $data['a'] = $arrivalCode;
+        $data['date'] = $departDate;
+        if ($returnDate !== '') {
+            $data['ret_date'] = $returnDate;
+        }
+        $data['adult'] = $adult;
+        if ($returnDate !== '') {
+            $data['ret_date'] = $returnDate;
+        }
+        if ($child !== 0) {
+            $data['child'] = $child;
+        }
+        if ($infant !== 0) {
+            $data['infant'] = $infant;
+        }
+        $data['v'] = $version;
+        $data['output'] = 'json';
+
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response->body;
+    }
+
+    /**
+     *
+     * @param $token
+     * @param string $flightId
+     * @param string $date date want to travel
+     * @param string $retFlightId
+     * @param string $retDate
+     * @return \Unirest\Response
+     */
+    public function getFlightData($token, $flightId, $date, $retFlightId, $retDate)
+    {
+        $request_path = "search/flight";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+
+        $data = array();
+        $data['token'] = $token;
+        $data['flight_id'] = $flightId;
+        $data['date'] = $date;
+        $data['ret_flight_id'] = $retFlightId;
+        $data['ret_date'] = $retDate;
+        $data['output'] = 'json';
+
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     * @param $token
+     * @return \Unirest\Response
+     */
+    public function getFlightSearchAirport($token)
+    {
+        $request_path = "flight_api/all_airport";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $data = array();
+        $data['token'] = $token;
+        $data['output'] = 'json';
+
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     *
+     * @param string $token
+     * @param string $ip
+     * @return \Unirest\Response
+     */
+    public function getFlightNearestAirportByIp($token, $ip)
+    {
+        $request_path = "flight_api/all_airport";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $data = array();
+        $data['token'] = $token;
+        $data['ip'] = $ip;
+        $data['output'] = 'json';
+
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
+    }
+
+    /**
+     *
+     * @param string $token
+     * @param string $latitude latitude position user
+     * @param string $longitude latitude position user
+     * @return \Unirest\Response
+     */
+    public function getFlightNearestAirportByLongLat($token, $latitude, $longitude)
+    {
+        $request_path = "flight_api/all_airport";
+        $domain = $this->ddnDomain();
+        $full_url = $domain . $request_path;
+        $data = array();
+        $data['token'] = $token;
+        $data['latitude'] = $latitude;
+        $data['longitude'] = $longitude;
+        $data['output'] = 'json';
+
+        $headers = array(
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'user-agent' => $this->settings['headers-agent']
+        );
+
+        $response = \Unirest\Request::get($full_url, $headers, $data);
+
+        return $response;
     }
 
     /**

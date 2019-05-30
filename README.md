@@ -1,5 +1,6 @@
 # Tiket[dot][com] PHP Library
 
+Native PHP library untuk mengintegrasikan Aplikasi Anda dengan sistem TIKET[DOT][COM]. Untuk dokumentasi lebih jelas dan lengkap, silahkan kunjungi website resminya di [Developer Tiketdotcom]((http://docs.tiket.com)).
 
 # TESTING
 
