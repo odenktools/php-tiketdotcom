@@ -1,6 +1,6 @@
 <?php
 
-namespace Ticket;
+namespace Tiket;
 
 use Carbon\Carbon;
 use Unirest\Request;
@@ -13,7 +13,7 @@ use Unirest\Request\Body;
  * @license    MIT
  * @copyright  (c) 2019, Pribumi Technology
  */
-class TicketHttp
+class TiketHttp
 {
     public static $VERSION = '1.0.0';
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Ticket;
+namespace Tiket;
 
 class TiketHttpException extends \Exception
 {
